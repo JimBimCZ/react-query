@@ -1,21 +1,19 @@
 import { ToastContainer } from 'react-toastify';
-import { nanoid } from 'nanoid';
 import Form from './Form';
 import Items from './Items';
-import { useState } from 'react';
-const defaultItems = [
-    { id: nanoid(), title: 'walk the dog', isDone: false },
-    { id: nanoid(), title: 'wash dishes', isDone: false },
-    { id: nanoid(), title: 'drink coffee', isDone: true },
-    { id: nanoid(), title: 'take a nap', isDone: false },
-];
+import {useQuery} from "@tanstack/react-query";
+import {customApiCall} from "./utils/axios/globalCallSetup.ts";
+
 const App = () => {
-    const [items, setItems] = useState(defaultItems);
+    const {data, isLoading} = useQuery({queryKey: ['tasks'], queryFn: async () => {
+            const {data} = await customApiCall.get('/')
+            return data
+        }})
     return (
         <section className='section-center'>
             <ToastContainer position='top-center' />
             <Form />
-            <Items items={items} />
+            <Items items={data?.taskList ?? []} isLoading={isLoading} />
         </section>
     );
 };
