@@ -1,23 +1,10 @@
-import { type SyntheticEvent, useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { customApiCall } from "./utils/axios/globalCallSetup.ts";
-import { toast } from "react-toastify";
+import { type SyntheticEvent } from "react";
+import { useCreateTask } from "./utils/hooks/queryHooks.ts";
 
 const Form = () => {
-  const [newItemName, setNewItemName] = useState("");
-  const queryClient = useQueryClient();
-  const { mutate: createTask, isPending } = useMutation({
-    mutationFn: (taskTitle: string): Promise<unknown> =>
-      customApiCall.post("/", { title: taskTitle }),
-    onSuccess: () => {
-      setNewItemName("");
-      toast.success("task added");
-      queryClient.invalidateQueries({ queryKey: ["tasks"] });
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  });
+  const { newItemName, isPending, setNewItemName, createTask } =
+    useCreateTask();
+
   const handleSubmit = (e: SyntheticEvent<HTMLFormElement>) => {
     console.log("here");
     e.preventDefault();

@@ -1,29 +1,9 @@
 import type { IItem } from "./types/IItem.ts";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { customApiCall } from "./utils/axios/globalCallSetup.ts";
-import { toast } from "react-toastify";
+import { useUpdateAndDeleteTask } from "./utils/hooks/queryHooks.ts";
 
 const SingleItem = ({ item }: { item: IItem }) => {
-  const queryClient = useQueryClient();
-  const { mutate: editTask, isPending } = useMutation({
-    mutationFn: async (isDone: boolean): Promise<unknown> => {
-      return await customApiCall.patch(`/${item.id}`, { isDone });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tasks"] });
-      toast.success("Task updated");
-    },
-  });
-
-  const { mutate: deleteTask, isPending: isDeleting } = useMutation({
-    mutationFn: async (): Promise<unknown> => {
-      return await customApiCall.delete(`/${item.id}`);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tasks"] });
-      toast.success("Task deleted");
-    },
-  });
+  const { editTask, deleteTask, isDeleting, isPending } =
+    useUpdateAndDeleteTask(item);
 
   const onStatusChange = () => {
     editTask(!item.isDone);
